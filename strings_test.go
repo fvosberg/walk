@@ -1,6 +1,7 @@
 package walk_test
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 
@@ -13,8 +14,10 @@ func TestWalkStrings(t *testing.T) {
 		title string
 		in    interface{}
 		out   interface{}
+		err   error
 	}{
-		{in: pString("foobar"), out: pString("foobarfoobar")},
+		{title: "pointer to string", in: pString("foobar"), out: pString("foobarfoobar")},
+		{title: "string", in: "foobar", out: "foobar", err: errors.New("Couldn't set the value - need pointer or slice as argument")},
 	}
 
 	for _, tt := range tests {
@@ -22,8 +25,8 @@ func TestWalkStrings(t *testing.T) {
 			err := walk.Strings(tt.in, func(s string) string {
 				return s + s
 			})
-			if err != nil {
-				t.Fatalf("Unexpected error: %s", err)
+			if (err == nil) != (tt.err == nil) || (err != nil && tt.err != nil && err.Error() != tt.err.Error()) {
+				t.Fatalf("Unexpected error: %s - expected %s", err, tt.err)
 			}
 			if !cmp.Equal(tt.in, tt.out) {
 				var in interface{} = tt.in
