@@ -12,6 +12,7 @@ import (
 type twoString struct {
 	A string
 	B string
+	c string
 }
 
 func TestWalkStrings(t *testing.T) {
@@ -43,7 +44,7 @@ func TestWalkStrings(t *testing.T) {
 			if (err == nil) != (tt.err == nil) || (err != nil && tt.err != nil && err.Error() != tt.err.Error()) {
 				t.Fatalf("Unexpected error: %s - expected %s", err, tt.err)
 			}
-			if !cmp.Equal(tt.in, tt.out) {
+			if !cmp.Equal(tt.in, tt.out, cmp.AllowUnexported(twoString{})) {
 				var in interface{} = tt.in
 				var out interface{} = tt.out
 				orv := reflect.ValueOf(tt.out)
