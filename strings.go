@@ -1,8 +1,9 @@
 package walk
 
 import (
-	"errors"
 	"reflect"
+
+	"github.com/pkg/errors"
 )
 
 // Strings walks over all strings of the first parameter and executes the given function on it
@@ -29,16 +30,18 @@ func strings(rv reflect.Value, fn func(string) string) error {
 		}
 	case reflect.Struct:
 		for i := 0; i < rv.NumField(); i++ {
-			f := rv.Field(i)
-			if !f.CanSet() || f.Kind() != reflect.String {
-				continue
+			err := strings(rv.Field(i), fn)
+			if err != nil {
+				return errors.Wrapf(err, "processing field %#v failed", rv)
 			}
-			applyString(rv.Field(i), fn)
 		}
 	}
 	return nil
 }
 
 func applyString(rv reflect.Value, fn func(string) string) {
+	if !rv.CanSet() {
+		return
+	}
 	rv.SetString(fn(rv.String()))
 }

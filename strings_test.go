@@ -33,6 +33,11 @@ func TestWalkStrings(t *testing.T) {
 			in:    &twoStringInt{A: "foo", B: "bar", I: 42},
 			out:   &twoStringInt{A: "foofoo", B: "barbar", I: 42},
 		},
+		{
+			title: "a struct with a ptr to a string",
+			in:    &ptrStringStruct{A: "foo", B: pString("bar")},
+			out:   &ptrStringStruct{A: "foofoo", B: pString("barbar")},
+		},
 	}
 
 	for _, tt := range tests {
@@ -74,4 +79,9 @@ type twoStringInt struct {
 	A string
 	B string
 	I int
+}
+
+type ptrStringStruct struct {
+	A string
+	B *string
 }
