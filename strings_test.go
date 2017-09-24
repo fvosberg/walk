@@ -24,20 +24,43 @@ func TestWalkStrings(t *testing.T) {
 			out:   []string{"foobarfoobar", "baarfoobaarfoo"},
 		},
 		{
-			title: "a struct with strings",
+			title: "struct with strings",
 			in:    &twoString{A: "foo", B: "bar", c: "small"},
 			out:   &twoString{A: "foofoo", B: "barbar", c: "small"},
 		},
 		{
-			title: "a struct with strings and ints",
+			title: "struct with strings and ints",
 			in:    &twoStringInt{A: "foo", B: "bar", I: 42},
 			out:   &twoStringInt{A: "foofoo", B: "barbar", I: 42},
 		},
 		{
-			title: "a struct with a ptr to a string",
+			title: "struct with a ptr to a string",
 			in:    &ptrStringStruct{A: "foo", B: pString("bar")},
 			out:   &ptrStringStruct{A: "foofoo", B: pString("barbar")},
 		},
+		{
+			title: "struct with structs",
+			in:    &deepStrings{A: "foo", D: twoString{A: "bar"}, P: &deepStrings{A: "baz"}},
+			out:   &deepStrings{A: "foofoo", D: twoString{A: "barbar"}, P: &deepStrings{A: "bazbaz"}},
+		},
+		{
+			title: "non pointer struct",
+			in:    twoString{A: "bar"},
+			out:   twoString{A: "bar"},
+			err:   errors.New("Couldn't set the value - need pointer or slice as argument"),
+		},
+		{
+			title: "string nil pointer",
+			in:    (*string)(nil),
+			out:   (*string)(nil),
+		},
+		{
+			title: "struct with a nil pointer",
+			in:    &deepStrings{A: "foo", D: twoString{A: "bar"}, P: nil},
+			out:   &deepStrings{A: "foofoo", D: twoString{A: "barbar"}, P: nil},
+		},
+		// TODO map with strings
+		// TODO map with structs
 	}
 
 	for _, tt := range tests {
@@ -84,4 +107,10 @@ type twoStringInt struct {
 type ptrStringStruct struct {
 	A string
 	B *string
+}
+
+type deepStrings struct {
+	A string
+	D twoString
+	P *deepStrings
 }
