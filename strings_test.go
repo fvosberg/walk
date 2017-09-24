@@ -9,12 +9,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-type twoString struct {
-	A string
-	B string
-	c string
-}
-
 func TestWalkStrings(t *testing.T) {
 	tests := []struct {
 		title string
@@ -31,8 +25,13 @@ func TestWalkStrings(t *testing.T) {
 		},
 		{
 			title: "a struct with strings",
-			in:    &twoString{A: "foo", B: "bar"},
-			out:   &twoString{A: "foofoo", B: "barbar"},
+			in:    &twoString{A: "foo", B: "bar", c: "small"},
+			out:   &twoString{A: "foofoo", B: "barbar", c: "small"},
+		},
+		{
+			title: "a struct with strings and ints",
+			in:    &twoStringInt{A: "foo", B: "bar", I: 42},
+			out:   &twoStringInt{A: "foofoo", B: "barbar", I: 42},
 		},
 	}
 
@@ -63,4 +62,16 @@ func TestWalkStrings(t *testing.T) {
 
 func pString(s string) *string {
 	return &s
+}
+
+type twoString struct {
+	A string
+	B string
+	c string
+}
+
+type twoStringInt struct {
+	A string
+	B string
+	I int
 }

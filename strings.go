@@ -29,9 +29,11 @@ func strings(rv reflect.Value, fn func(string) string) error {
 		}
 	case reflect.Struct:
 		for i := 0; i < rv.NumField(); i++ {
-			if rv.Field(i).CanSet() {
-				applyString(rv.Field(i), fn)
+			f := rv.Field(i)
+			if !f.CanSet() || f.Kind() != reflect.String {
+				continue
 			}
+			applyString(rv.Field(i), fn)
 		}
 	}
 	return nil
