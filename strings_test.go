@@ -9,6 +9,11 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+type twoString struct {
+	A string
+	B string
+}
+
 func TestWalkStrings(t *testing.T) {
 	tests := []struct {
 		title string
@@ -18,6 +23,16 @@ func TestWalkStrings(t *testing.T) {
 	}{
 		{title: "pointer to string", in: pString("foobar"), out: pString("foobarfoobar")},
 		{title: "string", in: "foobar", out: "foobar", err: errors.New("Couldn't set the value - need pointer or slice as argument")},
+		{
+			title: "slice of strings",
+			in:    []string{"foobar", "baarfoo"},
+			out:   []string{"foobarfoobar", "baarfoobaarfoo"},
+		},
+		{
+			title: "a struct with strings",
+			in:    &twoString{A: "foo", B: "bar"},
+			out:   &twoString{A: "foofoo", B: "barbar"},
+		},
 	}
 
 	for _, tt := range tests {
